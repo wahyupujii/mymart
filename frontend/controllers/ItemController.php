@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use frontend\models\Statistic;
 
 /**
  * ItemController implements the CRUD actions for Item model.
@@ -29,12 +30,23 @@ class ItemController extends Controller
         ];
     }
 
+    private function actionRecord($param){
+        $statis = new Statistic();
+        $statis->access_time = date ('Y-m-d H:i:s');
+        $statis->user_ip = $param->userIP;
+        $statis->user_host = $param->hostInfo;
+        $statis->path_info = $param->pathInfo;
+        $statis->query_string = $param->queryString;
+        $statis->save();
+   }
+
     /**
      * Lists all Item models.
      * @return mixed
      */
     public function actionIndex()
     {
+        $this->actionRecord(Yii::$app->request);
         $dataProvider = new ActiveDataProvider([
             'query' => Item::find(),
         ]);
@@ -52,6 +64,7 @@ class ItemController extends Controller
      */
     public function actionView($id)
     {
+        $this->actionRecord(Yii::$app->request);
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
