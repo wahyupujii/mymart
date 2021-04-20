@@ -2,20 +2,19 @@
 
 namespace frontend\controllers;
 
+use common\models\User;
 use Yii;
-use frontend\models\Item;
+use frontend\models\Customer;
+use Symfony\Component\Finder\Iterator\CustomFilterIterator;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use frontend\models\Statistic;
-use frontend\components\MyComponent;
-use phpDocumentor\Reflection\Types\This;
 
 /**
- * ItemController implements the CRUD actions for Item model.
+ * CustomerController implements the CRUD actions for Customer model.
  */
-class ItemController extends Controller
+class CustomerController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -32,61 +31,50 @@ class ItemController extends Controller
         ];
     }
 
-    private function actionRecord($param){
-        $statis = new Statistic();
-        $statis->access_time = date ('Y-m-d H:i:s');
-        $statis->user_ip = $param->userIP;
-        var_dump($param->userIP);
-        $statis->user_host = $param->hostInfo;
-        var_dump($param->hostInfo);
-        $statis->path_info = $param->pathInfo;
-        var_dump($param->pathInfo);
-        $statis->query_string = $param->queryString;
-        var_dump($param->queryString);
-        $statis->save();
-   }
-
     /**
-     * Lists all Item models.
+     * Lists all Customer models.
      * @return mixed
      */
     public function actionIndex()
     {
-        // Yii::$app->MyComponent->trigger(\frontend\components\MyComponent::EVENT_AFTER_SOMETHING);
-        $this->actionRecord(Yii::$app->request);
         $dataProvider = new ActiveDataProvider([
-            'query' => Item::find(),
+            'query' => Customer::find(),
         ]);
+
+        $boolean = true;
+        $user_login = User::findOne(Yii::$app->user->id);
+        if (count($user_login->customers) >= 1) {
+            $boolean = false;
+        }
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'boolean' => $boolean,
         ]);
     }
 
     /**
-     * Displays a single Item model.
+     * Displays a single Customer model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id)
     {
-        // Yii::$app->MyComponent->trigger(\frontend\components\MyComponent::EVENT_AFTER_SOMETHING);
-        $this->actionRecord(Yii::$app->request);
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
-    } 
+    }
 
     /**
-     * Creates a new Item model.
+     * Creates a new Customer model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Item();
-
+        $model = new Customer();
+        $model->user_id = Yii::$app->user->id;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -97,7 +85,7 @@ class ItemController extends Controller
     }
 
     /**
-     * Updates an existing Item model.
+     * Updates an existing Customer model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -117,7 +105,7 @@ class ItemController extends Controller
     }
 
     /**
-     * Deletes an existing Item model.
+     * Deletes an existing Customer model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -131,15 +119,15 @@ class ItemController extends Controller
     }
 
     /**
-     * Finds the Item model based on its primary key value.
+     * Finds the Customer model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Item the loaded model
+     * @return Customer the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Item::findOne($id)) !== null) {
+        if (($model = Customer::findOne($id)) !== null) {
             return $model;
         }
 

@@ -13,6 +13,10 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
+        'MyComponent' => [
+            'class' => 'frontend\components\MyComponent',
+            'on after-something' => ['frontend\components\MyComponent','addStatistic'],
+        ],
         'request' => [
             'csrfParam' => '_csrf-frontend',
         ],

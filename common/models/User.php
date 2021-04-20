@@ -1,6 +1,7 @@
 <?php
 namespace common\models;
 
+use frontend\models\Customer;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -208,5 +209,8 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+    public function getCustomers() {
+        return $this->hasMany(Customer::className() , ['user_id' => 'id']);
     }
 }
