@@ -10,11 +10,13 @@ use yii\widgets\ActiveForm;
 
 <div class="item-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'price')->textInput() ?>
+
+    <?= $form->field($model, 'upload')->fileInput() ?>
 
     <?= $form->field($model, 'category_id')->textInput() ?>
 

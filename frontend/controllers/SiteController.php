@@ -14,6 +14,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use frontend\models\Item;
 
 /**
  * Site controller
@@ -40,6 +41,11 @@ class SiteController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    [
+                        'actions' => ['checkout'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
                 ],
             ],
             'verbs' => [
@@ -74,7 +80,10 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $items = Item::find()->with('category')->all();
+        return $this->render('index', [
+            'items' => $items,
+        ]);
     }
 
     /**
@@ -256,5 +265,10 @@ class SiteController extends Controller
         return $this->render('resendVerificationEmail', [
             'model' => $model
         ]);
+    }
+
+    // render checkout view
+    public function actionCheckout() {
+        return $this->render('checkout');
     }
 }

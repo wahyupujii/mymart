@@ -9,8 +9,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use frontend\models\Statistic;
-use frontend\components\MyComponent;
-use phpDocumentor\Reflection\Types\This;
+use yii\web\UploadedFile;
+
 
 /**
  * ItemController implements the CRUD actions for Item model.
@@ -87,9 +87,7 @@ class ItemController extends Controller
     {
         $model = new Item();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        $this->saveImage($model);
 
         return $this->render('create', [
             'model' => $model,
@@ -107,9 +105,7 @@ class ItemController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        $this->saveImage($model);
 
         return $this->render('update', [
             'model' => $model,
@@ -144,5 +140,20 @@ class ItemController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    protected function saveImage(Item $item) {
+        if ($item->load(Yii::$app->request->post()) && $item->save()) {
+            $item->upload = UploadedFile::getInstance($item, 'upload');
+            if ($item->validate()) {
+                $path = 'upload/items/'.$item->upload->baseName."-".time().'.'.$item->upload->extension;
+                if ($item->upload->saveAs($path)) {
+                    $item->image = $path;
+                }
+                if ($item->save(false)) {
+                    return $this->redirect(['view' , 'id' => $item->id]);
+                }
+            }
+        }
     }
 }

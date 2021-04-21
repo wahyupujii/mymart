@@ -1,5 +1,7 @@
 <?php
 
+use Codeception\PHPUnit\ResultPrinter\HTML as ResultPrinterHTML;
+use yii\bootstrap\Html as BootstrapHtml;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -33,6 +35,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'price',
             'category_id',
+            [
+                'label' => 'Item Image',
+                'format' => 'raw',
+                'value' => Html::img(Yii::$app->request->baseUrl.'/'.$model->image,['width'=>'300px']),
+            ]
         ],
     ]) ?>
 

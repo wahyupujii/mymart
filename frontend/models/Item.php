@@ -19,6 +19,7 @@ class Item extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public $upload;
     public static function tableName()
     {
         return 'item';
@@ -33,7 +34,9 @@ class Item extends \yii\db\ActiveRecord
             [['price', 'category_id'], 'required'],
             [['price', 'category_id'], 'integer'],
             [['name'], 'string', 'max' => 255],
+            [['name', 'image'], 'string', 'max' => 255],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['category_id' => 'id']],
+            [['upload'], 'file', 'extensions' => ['png','jpg','jpeg'], 'maxSize' => '500000'],
         ];
     }
 
@@ -46,7 +49,9 @@ class Item extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
             'price' => 'Price',
+            'image' => 'Image',
             'category_id' => 'Category ID',
+            'upload' => 'Item Image',
         ];
     }
 
@@ -58,5 +63,24 @@ class Item extends \yii\db\ActiveRecord
     public function getCategory()
     {
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
+    }
+
+    
+   /** 
+    * Gets query for [[OrderItems]]. 
+    * 
+    * @return \yii\db\ActiveQuery 
+    */ 
+    public function getOrderItems() 
+    { 
+        return $this->hasMany(OrderItem::className(), ['item_id' => 'id']); 
+    } 
+   
+    public function getPriceRp() {
+        return 'Rp '.number_format($this->price,2,'.','.');
+    }
+
+    public function getImagePre() {
+        return Yii::$app->request->hostInfo.'/'.$this->image;
     }
 }
